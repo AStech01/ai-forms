@@ -1,3 +1,4 @@
+"use strict";
 // import express from 'express';
 // import multer from 'multer';
 // import { authenticate, AuthRequest } from '../middleware/auth';
@@ -7,14 +8,16 @@
 // import mongoose from 'mongoose'
 // const router = express.Router();
 // const upload = multer({ storage: multer.memoryStorage() });
-
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
 // /**
 //  * ✅ Generate a new form from a prompt
 //  */
 // router.post('/generate', authenticate, async (req: AuthRequest, res) => {
 //   try {
 //     const { prompt } = req.body;
-
 //     // Validate prompt
 //     if (!prompt || typeof prompt !== 'string' || prompt.trim() === '') {
 //       return res.status(400).json({ 
@@ -22,7 +25,6 @@
 //         message: 'Valid prompt is required' 
 //       });
 //     }
-
 //     const cleanPrompt = prompt.trim();
 //     if (cleanPrompt.length > 1000) {
 //       return res.status(400).json({
@@ -30,12 +32,9 @@
 //         message: 'Prompt too long. Maximum 1000 characters.'
 //       });
 //     }
-
 //     console.log(`👤 User ${req.userId} generating form for: "${cleanPrompt}"`);
-
 //     // Generate form schema
 //     const schema = await generateFormSchema(cleanPrompt);
-
 //     // Clean and validate the schema
 //     const cleanSchema = {
 //       title: (schema.title || `Form: ${cleanPrompt.substring(0, 50)}`).trim(),
@@ -48,11 +47,9 @@
 //           .replace(/[^a-z0-9_]/g, '_')
 //           .replace(/_+/g, '_')
 //           .replace(/^_|_$/g, '');
-
 //         if (!cleanId) {
 //           cleanId = `field_${index + 1}`;
 //         }
-
 //         // Clean options if present
 //         let cleanOptions = undefined;
 //         if (field.options && Array.isArray(field.options)) {
@@ -62,13 +59,11 @@
 //               value: String(opt.value).trim(),
 //               label: String(opt.label).trim()
 //             }));
-          
 //           // Remove options array if empty
 //           if (cleanOptions.length === 0) {
 //             cleanOptions = undefined;
 //           }
 //         }
-
 //         // Return cleaned field
 //         return {
 //           id: cleanId,
@@ -81,7 +76,6 @@
 //         };
 //       })
 //     };
-
 //     // Ensure we have at least one field
 //     if (cleanSchema.fields.length === 0) {
 //       cleanSchema.fields = [
@@ -94,12 +88,10 @@
 //         }
 //       ];
 //     }
-
 //     // Limit number of fields
 //     if (cleanSchema.fields.length > 20) {
 //       cleanSchema.fields = cleanSchema.fields.slice(0, 20);
 //     }
-
 //     // Create and save the form
 //     const form = new Form({
 //       userId: req.userId,
@@ -109,11 +101,8 @@
 //       prompt: cleanPrompt,
 //       isPublic: true
 //     });
-
 //     const savedForm = await form.save();
-
 //     console.log(`✅ Form saved successfully: ${savedForm._id}`);
-
 //     // Return success response
 //     res.status(201).json({
 //       success: true,
@@ -127,10 +116,8 @@
 //         createdAt: savedForm.createdAt
 //       }
 //     });
-
 //   } catch (error: any) {
 //     console.error('❌ Generate form error:', error);
-
 //     // Handle validation errors
 //     if (error.name === 'ValidationError') {
 //       const errors = Object.values(error.errors).map((err: any) => err.message);
@@ -140,7 +127,6 @@
 //         errors
 //       });
 //     }
-
 //     // Handle cast errors
 //     if (error.name === 'CastError') {
 //       return res.status(400).json({
@@ -148,7 +134,6 @@
 //         message: 'Invalid data format'
 //       });
 //     }
-
 //     res.status(500).json({
 //       success: false,
 //       message: 'Failed to generate form',
@@ -156,7 +141,6 @@
 //     });
 //   }
 // });
-
 // /**
 //  * 📄 Get all forms for authenticated user
 //  */
@@ -165,15 +149,12 @@
 //     const page = parseInt(req.query.page as string) || 1;
 //     const limit = parseInt(req.query.limit as string) || 10;
 //     const skip = (page - 1) * limit;
-
 //     const forms = await Form.find({ userId: req.userId })
 //       .sort({ createdAt: -1 })
 //       .skip(skip)
 //       .limit(limit)
 //       .select('-__v');
-
 //     const total = await Form.countDocuments({ userId: req.userId });
-
 //     res.json({
 //       success: true,
 //       forms,
@@ -193,28 +174,24 @@
 //     });
 //   }
 // });
-
 // /**
 //  * 📄 Get single form by ID (public access)
 //  */
 // // router.get('/:id', async (req, res) => {
 // //   try {
 // //     const form = await Form.findById(req.params.id).select('-__v');
-
 // //     if (!form) {
 // //       return res.status(404).json({
 // //         success: false,
 // //         message: 'Form not found'
 // //       });
 // //     }
-
 // //     if (!form.isPublic) {
 // //       return res.status(403).json({
 // //         success: false,
 // //         message: 'This form is not publicly accessible'
 // //       });
 // //     }
-
 // //     res.json({
 // //       success: true,
 // //       form: {
@@ -228,14 +205,12 @@
 // //     });
 // //   } catch (error: any) {
 // //     console.error('❌ Get form error:', error);
-    
 // //     if (error.name === 'CastError') {
 // //       return res.status(400).json({
 // //         success: false,
 // //         message: 'Invalid form ID'
 // //       });
 // //     }
-    
 // //     res.status(500).json({
 // //       success: false,
 // //       message: 'Failed to fetch form',
@@ -245,31 +220,26 @@
 // // });
 // router.get('/:id', async (req, res) => {
 //   const formId = req.params.id;
-
 //   if (!formId || !mongoose.Types.ObjectId.isValid(formId)) {
 //     return res.status(400).json({
 //       success: false,
 //       message: 'Invalid form ID'
 //     });
 //   }
-
 //   try {
 //     const form = await Form.findById(formId).select('-__v');
-    
 //     if (!form) {
 //       return res.status(404).json({
 //         success: false,
 //         message: 'Form not found'
 //       });
 //     }
-
 //     if (!form.isPublic) {
 //       return res.status(403).json({
 //         success: false,
 //         message: 'This form is not publicly accessible'
 //       });
 //     }
-
 //     res.json({
 //       success: true,
 //       form: {
@@ -290,7 +260,6 @@
 //     });
 //   }
 // });
-
 // /**
 //  * 🗑️ Delete a form (only owner)
 //  */
@@ -300,33 +269,27 @@
 //       _id: req.params.id,
 //       userId: req.userId
 //     });
-
 //     if (!form) {
 //       return res.status(404).json({
 //         success: false,
 //         message: 'Form not found or you do not have permission to delete it'
 //       });
 //     }
-
 //     // Delete associated submissions
 //     await Submission.deleteMany({ formId: form._id });
-
 //     console.log(`🗑️ Form ${form._id} deleted by user ${req.userId}`);
-
 //     res.json({
 //       success: true,
 //       message: 'Form and its submissions deleted successfully'
 //     });
 //   } catch (error: any) {
 //     console.error('❌ Delete form error:', error);
-    
 //     if (error.name === 'CastError') {
 //       return res.status(400).json({
 //         success: false,
 //         message: 'Invalid form ID'
 //       });
 //     }
-    
 //     res.status(500).json({
 //       success: false,
 //       message: 'Failed to delete form',
@@ -334,21 +297,18 @@
 //     });
 //   }
 // });
-
 // /**
 //  * 🔍 Search forms by title or description
 //  */
 // router.get('/search/my-forms', authenticate, async (req: AuthRequest, res) => {
 //   try {
 //     const { q } = req.query;
-    
 //     if (!q || typeof q !== 'string') {
 //       return res.status(400).json({
 //         success: false,
 //         message: 'Search query is required'
 //       });
 //     }
-
 //     const forms = await Form.find({
 //       userId: req.userId,
 //       $or: [
@@ -356,7 +316,6 @@
 //         { description: { $regex: q, $options: 'i' } }
 //       ]
 //     }).sort({ createdAt: -1 }).select('-__v');
-
 //     res.json({
 //       success: true,
 //       forms,
@@ -371,310 +330,282 @@
 //     });
 //   }
 // });
-
 // export default router;
-
-
-
-import express from 'express';
-import mongoose from 'mongoose';
-import { authenticate, AuthRequest } from '../middleware/auth';
-import { generateFormSchema } from '../services/gemini';
-import Form from '../models/Form';
-import Submission from '../models/Submission';
-
-const router = express.Router();
-
+const express_1 = __importDefault(require("express"));
+const mongoose_1 = __importDefault(require("mongoose"));
+const auth_1 = require("../middleware/auth");
+const gemini_1 = require("../services/gemini");
+const Form_1 = __importDefault(require("../models/Form"));
+const Submission_1 = __importDefault(require("../models/Submission"));
+const router = express_1.default.Router();
 /** ✅ Generate a new form from a prompt */
-router.post('/generate', authenticate, async (req: AuthRequest, res) => {
-  try {
-    const { prompt } = req.body;
-
-    if (!prompt || typeof prompt !== 'string' || prompt.trim() === '') {
-      return res.status(400).json({
-        success: false,
-        message: 'Valid prompt is required',
-      });
-    }
-
-    const cleanPrompt = prompt.trim();
-    if (cleanPrompt.length > 1000) {
-      return res.status(400).json({
-        success: false,
-        message: 'Prompt too long. Maximum 1000 characters.',
-      });
-    }
-
-    console.log(`👤 User ${req.userId} generating form for: "${cleanPrompt}"`);
-
-    const schema = await generateFormSchema(cleanPrompt);
-
-    const cleanSchema = {
-      title: (schema.title || `Form: ${cleanPrompt.substring(0, 50)}`).trim(),
-      description: (schema.description || `Generated from: ${cleanPrompt}`).trim(),
-      fields: (schema.fields || []).map((field, index) => {
-        let cleanId = field.id || `field_${index + 1}`;
-        cleanId = cleanId
-          .toLowerCase()
-          .replace(/[^a-z0-9_]/g, '_')
-          .replace(/_+/g, '_')
-          .replace(/^_|_$/g, '');
-
-        if (!cleanId) {
-          cleanId = `field_${index + 1}`;
+router.post('/generate', auth_1.authenticate, async (req, res) => {
+    try {
+        const { prompt } = req.body;
+        if (!prompt || typeof prompt !== 'string' || prompt.trim() === '') {
+            return res.status(400).json({
+                success: false,
+                message: 'Valid prompt is required',
+            });
         }
-
-        let cleanOptions: undefined | { value: string; label: string }[];
-        if (field.options && Array.isArray(field.options)) {
-          cleanOptions = field.options
-            .filter(opt => opt && opt.value && opt.label)
-            .map(opt => ({
-              value: String(opt.value).trim(),
-              label: String(opt.label).trim(),
-            }));
-          if (cleanOptions.length === 0) {
-            cleanOptions = undefined;
-          }
+        const cleanPrompt = prompt.trim();
+        if (cleanPrompt.length > 1000) {
+            return res.status(400).json({
+                success: false,
+                message: 'Prompt too long. Maximum 1000 characters.',
+            });
         }
-
-        return {
-          id: cleanId,
-          type: field.type,
-          label: (field.label || `Field ${index + 1}`).trim(),
-          placeholder: field.placeholder ? String(field.placeholder).trim() : '',
-          required: Boolean(field.required),
-          options: cleanOptions,
-          validation: field.validation,
+        console.log(`👤 User ${req.userId} generating form for: "${cleanPrompt}"`);
+        const schema = await (0, gemini_1.generateFormSchema)(cleanPrompt);
+        const cleanSchema = {
+            title: (schema.title || `Form: ${cleanPrompt.substring(0, 50)}`).trim(),
+            description: (schema.description || `Generated from: ${cleanPrompt}`).trim(),
+            fields: (schema.fields || []).map((field, index) => {
+                let cleanId = field.id || `field_${index + 1}`;
+                cleanId = cleanId
+                    .toLowerCase()
+                    .replace(/[^a-z0-9_]/g, '_')
+                    .replace(/_+/g, '_')
+                    .replace(/^_|_$/g, '');
+                if (!cleanId) {
+                    cleanId = `field_${index + 1}`;
+                }
+                let cleanOptions;
+                if (field.options && Array.isArray(field.options)) {
+                    cleanOptions = field.options
+                        .filter(opt => opt && opt.value && opt.label)
+                        .map(opt => ({
+                        value: String(opt.value).trim(),
+                        label: String(opt.label).trim(),
+                    }));
+                    if (cleanOptions.length === 0) {
+                        cleanOptions = undefined;
+                    }
+                }
+                return {
+                    id: cleanId,
+                    type: field.type,
+                    label: (field.label || `Field ${index + 1}`).trim(),
+                    placeholder: field.placeholder ? String(field.placeholder).trim() : '',
+                    required: Boolean(field.required),
+                    options: cleanOptions,
+                    validation: field.validation,
+                };
+            }),
         };
-      }),
-    };
-
-    if (cleanSchema.fields.length === 0) {
-      cleanSchema.fields = [
-        {
-          id: 'name',
-          type: 'text',
-          label: 'Name',
-          placeholder: 'Enter your name',
-          required: true,
-          options: undefined,
-          validation: undefined,
-        },
-      ];
+        if (cleanSchema.fields.length === 0) {
+            cleanSchema.fields = [
+                {
+                    id: 'name',
+                    type: 'text',
+                    label: 'Name',
+                    placeholder: 'Enter your name',
+                    required: true,
+                    options: undefined,
+                    validation: undefined,
+                },
+            ];
+        }
+        if (cleanSchema.fields.length > 20) {
+            cleanSchema.fields = cleanSchema.fields.slice(0, 20);
+        }
+        const form = new Form_1.default({
+            userId: req.userId,
+            title: cleanSchema.title,
+            description: cleanSchema.description,
+            fields: cleanSchema.fields,
+            prompt: cleanPrompt,
+            isPublic: true,
+        });
+        const savedForm = await form.save();
+        console.log(`✅ Form saved successfully: ${savedForm._id}`);
+        res.status(201).json({
+            success: true,
+            message: 'Form generated successfully',
+            form: {
+                id: savedForm._id,
+                title: savedForm.title,
+                description: savedForm.description,
+                fields: savedForm.fields,
+                isPublic: savedForm.isPublic,
+                createdAt: savedForm.createdAt,
+            },
+        });
     }
-
-    if (cleanSchema.fields.length > 20) {
-      cleanSchema.fields = cleanSchema.fields.slice(0, 20);
+    catch (error) {
+        console.error('❌ Generate form error:', error);
+        if (error.name === 'ValidationError') {
+            const errors = Object.values(error.errors).map((err) => err.message);
+            return res.status(400).json({
+                success: false,
+                message: 'Form validation failed',
+                errors,
+            });
+        }
+        if (error.name === 'CastError') {
+            return res.status(400).json({
+                success: false,
+                message: 'Invalid data format',
+            });
+        }
+        res.status(500).json({
+            success: false,
+            message: 'Failed to generate form',
+            error: process.env.NODE_ENV === 'development' ? error.message : 'Internal server error',
+        });
     }
-
-    const form = new Form({
-      userId: req.userId,
-      title: cleanSchema.title,
-      description: cleanSchema.description,
-      fields: cleanSchema.fields,
-      prompt: cleanPrompt,
-      isPublic: true,
-    });
-
-    const savedForm = await form.save();
-
-    console.log(`✅ Form saved successfully: ${savedForm._id}`);
-
-    res.status(201).json({
-      success: true,
-      message: 'Form generated successfully',
-      form: {
-        id: savedForm._id,
-        title: savedForm.title,
-        description: savedForm.description,
-        fields: savedForm.fields,
-        isPublic: savedForm.isPublic,
-        createdAt: savedForm.createdAt,
-      },
-    });
-  } catch (error: any) {
-    console.error('❌ Generate form error:', error);
-    if (error.name === 'ValidationError') {
-      const errors = Object.values(error.errors).map((err: any) => err.message);
-      return res.status(400).json({
-        success: false,
-        message: 'Form validation failed',
-        errors,
-      });
-    }
-    if (error.name === 'CastError') {
-      return res.status(400).json({
-        success: false,
-        message: 'Invalid data format',
-      });
-    }
-    res.status(500).json({
-      success: false,
-      message: 'Failed to generate form',
-      error: process.env.NODE_ENV === 'development' ? error.message : 'Internal server error',
-    });
-  }
 });
-
 /** 📄 Get all forms for authenticated user */
-router.get('/my-forms', authenticate, async (req: AuthRequest, res) => {
-  try {
-    const page = parseInt(req.query.page as string) || 1;
-    const limit = parseInt(req.query.limit as string) || 10;
-    const skip = (page - 1) * limit;
-
-    const forms = await Form.find({ userId: req.userId })
-      .sort({ createdAt: -1 })
-      .skip(skip)
-      .limit(limit)
-      .select('-__v');
-
-    const total = await Form.countDocuments({ userId: req.userId });
-
-    res.json({
-      success: true,
-      forms,
-      pagination: {
-        page,
-        limit,
-        total,
-        pages: Math.ceil(total / limit),
-      },
-    });
-  } catch (error: any) {
-    console.error('❌ Get forms error:', error);
-    res.status(500).json({
-      success: false,
-      message: 'Failed to fetch forms',
-      error: error.message,
-    });
-  }
-});
-
-/** 🔍 Search forms by title or description */
-router.get('/search/my-forms', authenticate, async (req: AuthRequest, res) => {
-  try {
-    const q = req.query.q as string;
-    if (!q || typeof q !== 'string') {
-      return res.status(400).json({
-        success: false,
-        message: 'Search query is required',
-      });
+router.get('/my-forms', auth_1.authenticate, async (req, res) => {
+    try {
+        const page = parseInt(req.query.page) || 1;
+        const limit = parseInt(req.query.limit) || 10;
+        const skip = (page - 1) * limit;
+        const forms = await Form_1.default.find({ userId: req.userId })
+            .sort({ createdAt: -1 })
+            .skip(skip)
+            .limit(limit)
+            .select('-__v');
+        const total = await Form_1.default.countDocuments({ userId: req.userId });
+        res.json({
+            success: true,
+            forms,
+            pagination: {
+                page,
+                limit,
+                total,
+                pages: Math.ceil(total / limit),
+            },
+        });
     }
-    const regex = new RegExp(q, 'i');
-    const forms = await Form.find({
-      userId: req.userId,
-      $or: [
-        { title: regex },
-        { description: regex },
-      ],
-    })
-      .sort({ createdAt: -1 })
-      .select('-__v');
-
-    res.json({
-      success: true,
-      forms,
-      count: forms.length,
-    });
-  } catch (error: any) {
-    console.error('❌ Search forms error:', error);
-    res.status(500).json({
-      success: false,
-      message: 'Search failed',
-      error: error.message,
-    });
-  }
+    catch (error) {
+        console.error('❌ Get forms error:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Failed to fetch forms',
+            error: error.message,
+        });
+    }
 });
-
+/** 🔍 Search forms by title or description */
+router.get('/search/my-forms', auth_1.authenticate, async (req, res) => {
+    try {
+        const q = req.query.q;
+        if (!q || typeof q !== 'string') {
+            return res.status(400).json({
+                success: false,
+                message: 'Search query is required',
+            });
+        }
+        const regex = new RegExp(q, 'i');
+        const forms = await Form_1.default.find({
+            userId: req.userId,
+            $or: [
+                { title: regex },
+                { description: regex },
+            ],
+        })
+            .sort({ createdAt: -1 })
+            .select('-__v');
+        res.json({
+            success: true,
+            forms,
+            count: forms.length,
+        });
+    }
+    catch (error) {
+        console.error('❌ Search forms error:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Search failed',
+            error: error.message,
+        });
+    }
+});
 /** 📄 Get single form by ID (public access) */
 router.get('/:id', async (req, res) => {
-  const formId = req.params.id;
-  if (!formId || !mongoose.Types.ObjectId.isValid(formId)) {
-    return res.status(400).json({
-      success: false,
-      message: 'Invalid form ID',
-    });
-  }
-  try {
-    const form = await Form.findById(formId).select('-__v');
-    if (!form) {
-      return res.status(404).json({
-        success: false,
-        message: 'Form not found',
-      });
+    const formId = req.params.id;
+    if (!formId || !mongoose_1.default.Types.ObjectId.isValid(formId)) {
+        return res.status(400).json({
+            success: false,
+            message: 'Invalid form ID',
+        });
     }
-    if (!form.isPublic) {
-      return res.status(403).json({
-        success: false,
-        message: 'This form is not publicly accessible',
-      });
+    try {
+        const form = await Form_1.default.findById(formId).select('-__v');
+        if (!form) {
+            return res.status(404).json({
+                success: false,
+                message: 'Form not found',
+            });
+        }
+        if (!form.isPublic) {
+            return res.status(403).json({
+                success: false,
+                message: 'This form is not publicly accessible',
+            });
+        }
+        res.json({
+            success: true,
+            form: {
+                id: form._id,
+                title: form.title,
+                description: form.description,
+                fields: form.fields,
+                isPublic: form.isPublic,
+                createdAt: form.createdAt,
+            },
+        });
     }
-    res.json({
-      success: true,
-      form: {
-        id: form._id,
-        title: form.title,
-        description: form.description,
-        fields: form.fields,
-        isPublic: form.isPublic,
-        createdAt: form.createdAt,
-      },
-    });
-  } catch (error: any) {
-    console.error('❌ Get form error:', error);
-    if (error.name === 'CastError') {
-      return res.status(400).json({
-        success: false,
-        message: 'Invalid form ID',
-      });
+    catch (error) {
+        console.error('❌ Get form error:', error);
+        if (error.name === 'CastError') {
+            return res.status(400).json({
+                success: false,
+                message: 'Invalid form ID',
+            });
+        }
+        res.status(500).json({
+            success: false,
+            message: 'Failed to fetch form',
+            error: error.message,
+        });
     }
-    res.status(500).json({
-      success: false,
-      message: 'Failed to fetch form',
-      error: error.message,
-    });
-  }
 });
-
 /** 🗑️ Delete a form (only owner) */
-router.delete('/:id', authenticate, async (req: AuthRequest, res) => {
-  try {
-    const form = await Form.findOneAndDelete({
-      _id: req.params.id,
-      userId: req.userId,
-    });
-
-    if (!form) {
-      return res.status(404).json({
-        success: false,
-        message: 'Form not found or you do not have permission to delete it',
-      });
+router.delete('/:id', auth_1.authenticate, async (req, res) => {
+    try {
+        const form = await Form_1.default.findOneAndDelete({
+            _id: req.params.id,
+            userId: req.userId,
+        });
+        if (!form) {
+            return res.status(404).json({
+                success: false,
+                message: 'Form not found or you do not have permission to delete it',
+            });
+        }
+        // Delete associated submissions
+        await Submission_1.default.deleteMany({ formId: form._id });
+        console.log(`🗑️ Form ${form._id} deleted by user ${req.userId}`);
+        res.json({
+            success: true,
+            message: 'Form and its submissions deleted successfully',
+        });
     }
-
-    // Delete associated submissions
-    await Submission.deleteMany({ formId: form._id });
-
-    console.log(`🗑️ Form ${form._id} deleted by user ${req.userId}`);
-
-    res.json({
-      success: true,
-      message: 'Form and its submissions deleted successfully',
-    });
-  } catch (error: any) {
-    console.error('❌ Delete form error:', error);
-    if (error.name === 'CastError') {
-      return res.status(400).json({
-        success: false,
-        message: 'Invalid form ID',
-      });
+    catch (error) {
+        console.error('❌ Delete form error:', error);
+        if (error.name === 'CastError') {
+            return res.status(400).json({
+                success: false,
+                message: 'Invalid form ID',
+            });
+        }
+        res.status(500).json({
+            success: false,
+            message: 'Failed to delete form',
+            error: error.message,
+        });
     }
-    res.status(500).json({
-      success: false,
-      message: 'Failed to delete form',
-      error: error.message,
-    });
-  }
 });
-
-export default router;
+exports.default = router;

@@ -65,8 +65,9 @@ export default function LoginPage() {
       login(data);
       router.push('/forms');
     },
-    onError: (error: any) => {
-      alert(error.message || 'Login failed');
+    onError: (error: unknown) => {
+      const message = error instanceof Error ? error.message : 'Login failed';
+      alert(message);
     },
   });
 
@@ -80,8 +81,8 @@ export default function LoginPage() {
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
         <Input label="Email" type="email" {...register('email', { required: true })} />
         <Input label="Password" type="password" {...register('password', { required: true })} />
-        <Button type="submit" disabled={mutation.isLoading}>
-          {mutation.isLoading ? 'Logging in...' : 'Login'}
+        <Button type="submit" disabled={mutation.status === 'pending'}>
+          {mutation.status === 'pending' ? 'Logging in...' : 'Login'}
         </Button>
       </form>
     </div>

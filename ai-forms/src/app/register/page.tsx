@@ -17,8 +17,9 @@ export default function RegisterPage() {
     onSuccess: () => {
       router.push('/login');
     },
-    onError: (error: any) => {
-      alert(error.message || 'Registration failed');
+    onError: (error: unknown) => {
+      const message = error instanceof Error ? error.message : 'Registration failed';
+      alert(message);
     },
   });
 
