@@ -161,7 +161,7 @@ import {
 } from '../types/api';
 
 const api: AxiosInstance = axios.create({
-  baseURL: 'http://localhost:5000', 
+  baseURL: 'http://localhost:5000',
   headers: { 'Content-Type': 'application/json' },
 });
 
@@ -224,7 +224,8 @@ export const getCurrentUser = async (): Promise<User> => {
 export const generateForm = async (data: GenerateFormRequest): Promise<Form> => {
   try {
     const response = await api.post('/api/forms/generate', data);
-    return response.data;
+    // Backend returns { success, message, form }
+    return response.data.form as Form;
   } catch (error) {
     throw handleApiError(error);
   }
@@ -233,7 +234,18 @@ export const generateForm = async (data: GenerateFormRequest): Promise<Form> => 
 export const getMyForms = async (): Promise<Form[]> => {
   try {
     const response = await api.get('/api/forms/my-forms');
-    return response.data;
+    // Backend returns { success, forms, pagination }
+    return (response.data?.forms ?? []) as Form[];
+  } catch (error) {
+    throw handleApiError(error);
+  }
+};
+
+export const searchMyForms = async (query: string): Promise<Form[]> => {
+  try {
+    const response = await api.get(`/api/forms/search/my-forms?q=${encodeURIComponent(query)}`);
+    // Backend returns { success, forms, count }
+    return (response.data?.forms ?? []) as Form[];
   } catch (error) {
     throw handleApiError(error);
   }
@@ -242,7 +254,8 @@ export const getMyForms = async (): Promise<Form[]> => {
 export const getPublicForm = async (id: string): Promise<Form> => {
   try {
     const response = await api.get(`/api/forms/${id}`);
-    return response.data;
+    // Backend returns { success, form }
+    return response.data.form as Form;
   } catch (error) {
     throw handleApiError(error);
   }
@@ -259,31 +272,48 @@ export const deleteForm = async (id: string): Promise<void> => {
 // --- Submission APIs ---
 export const submitForm = async (
   formId: string,
-  data: Record<string, any>,
+  data: Record<string, unknown>,
   token?: string
 ): Promise<Submission> => {
   try {
     const config = token ? { headers: { Authorization: `Bearer ${token}` } } : undefined;
     const response = await api.post(`/api/submissions/${formId}`, data, config);
-    return response.data;
+    // Backend returns { message, submission }
+    const raw = response.data?.submission;
+    return {
+      id: raw._id,
+      formId: raw.formId,
+      data: raw.data as Record<string, unknown>,
+      submittedAt: raw.submittedAt,
+    } as Submission;
   } catch (error) {
     throw handleApiError(error);
   }
 };
 
-// export const getSubmissions = async (formId: string): Promise<Submission[]> => {
-//   try {
-//     const response = await api.get(`/api/submissions/${formId}`);
-//     return response.data;
-//   } catch (error) {
-//     throw handleApiError(error);
-//   }
-// };
-export async function getSubmissions(formId: string) {
-  const res = await fetch(`/api/submissions/${formId}`);
-  if (!res.ok) throw new Error('Failed to fetch submissions');
-  return res.json();
-}
+type RawSubmission = {
+  _id: string;
+  formId: string;
+  data: Record<string, unknown>;
+  submittedAt: string;
+};
+
+export const getSubmissions = async (formId: string): Promise<Submission[]> => {
+  try {
+    const response = await api.get(`/api/submissions/${formId}`);
+    const list: RawSubmission[] = Array.isArray(response.data)
+      ? (response.data as RawSubmission[])
+      : [];
+    return list.map((s) => ({
+      id: s._id,
+      formId: s.formId,
+      data: s.data ?? {},
+      submittedAt: s.submittedAt,
+    }));
+  } catch (error) {
+    throw handleApiError(error);
+  }
+};
 export const deleteSubmission = async (submissionId: string): Promise<void> => {
   try {
     await api.delete(`/api/submissions/${submissionId}`);

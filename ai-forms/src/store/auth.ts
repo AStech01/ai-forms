@@ -38,7 +38,8 @@
 // }));
 
 import { create } from 'zustand';
-import { setAuthToken, getCurrentUser, LoginResponse } from '../lib/api';
+import { setAuthToken, getCurrentUser } from '../lib/api';
+import type { LoginResponse } from '../types/api';
 import { User } from '../types/api';
 
 interface AuthState {

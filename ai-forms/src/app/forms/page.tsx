@@ -720,26 +720,18 @@ export default function FormsPage() {
     data: forms = [],
     isLoading,
     isError,
-  } = useQuery({
+  } = useQuery<FormType[]>({
     queryKey: ['forms', searchQuery],
     queryFn: () => (searchQuery ? searchMyForms(searchQuery) : getMyForms()),
-    select: (data) => {
-      if (Array.isArray(data)) return data;
-      if ((data as any)?.forms) return (data as any).forms;
-      return [];
-    },
-    keepPreviousData: true,
+    placeholderData: (prev) => prev as FormType[] | undefined,
   });
 
   const generateMutation = useMutation({
     mutationFn: generateForm,
-    onSuccess: (data) => {
-      // Invalidate the root list to refresh
-      queryClient.invalidateQueries(['forms']);
-      if ((data as any)?.message) {
-        setSuccessMessage((data as any).message);
-        setTimeout(() => setSuccessMessage(''), 3000);
-      }
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['forms'] });
+      setSuccessMessage('Form generated successfully');
+      setTimeout(() => setSuccessMessage(''), 3000);
     },
     onError: () => {
       setSuccessMessage('Failed to generate form.');
@@ -750,7 +742,7 @@ export default function FormsPage() {
   const deleteMutation = useMutation({
     mutationFn: deleteForm,
     onSuccess: () => {
-      queryClient.invalidateQueries(['forms']);
+      queryClient.invalidateQueries({ queryKey: ['forms'] });
     },
     onError: () => {
       setSuccessMessage('Failed to delete form.');
@@ -781,10 +773,10 @@ export default function FormsPage() {
           placeholder="Generate form with prompt"
           value={prompt}
           onChange={(e) => setPrompt(e.target.value)}
-          disabled={generateMutation.isLoading}
+          disabled={generateMutation.status === 'pending'}
         />
-        <Button onClick={handleGenerate} disabled={generateMutation.isLoading}>
-          {generateMutation.isLoading ? 'Generating...' : 'Generate'}
+        <Button onClick={handleGenerate} disabled={generateMutation.status === 'pending'}>
+          {generateMutation.status === 'pending' ? 'Generating...' : 'Generate'}
         </Button>
       </div>
 
@@ -807,7 +799,7 @@ export default function FormsPage() {
             >
               <div>
                 <Link
-                  href={`/forms/${form.id}/submission`}
+                  href={`/forms/${form.id}/submissions`}
                   className="text-blue-600 hover:underline font-semibold"
                 >
                   {form.title}
@@ -817,7 +809,7 @@ export default function FormsPage() {
               <Button
                 variant="danger"
                 onClick={() => deleteMutation.mutate(form.id)}
-                disabled={deleteMutation.isLoading}
+                disabled={deleteMutation.status === 'pending'}
                 aria-label={`Delete form ${form.title}`}
               >
                 <Trash2 size={16} />
